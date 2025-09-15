@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: app_reviews
+    schema: analytics_public
+    tables:
+      - name: app_reviews
+        description: "This table contains cleaned app reviews with non-null review texts."
+        columns:
+          - name: review_id
+            tests:
+              - not_null
+              - unique
+          - name: rating
+            tests:
+              - not_null  
+              - accepted_values:
+                  values: [1, 2, 3, 4, 5]

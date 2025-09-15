@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ table_name }} - DBT Table{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-table"></i> {{ table_name }}</h1>
+    <div>
+        <button class="btn btn-outline-primary" onclick="refreshTable()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <button class="btn btn-outline-secondary" onclick="exportTable()">
+            <i class="fas fa-download"></i> Export
+        </button>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title"><i class="fas fa-info-circle"></i> Table Information</h6>
+                <p class="card-text">
+                    <strong>Rows displayed:</strong> {{ row_count }}<br>
+                    <strong>Columns:</strong> {{ columns|length }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title"><i class="fas fa-columns"></i> Column Details</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Type</th>
+                                <th>Nullable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for column in columns %}
+                            <tr>
+                                <td><code style="color: black;">{{ column.name }}</code></td>
+                                <td><span class="badge bg-secondary">{{ column.type }}</span></td>
+                                <td>
+                                    {% if column.nullable == 'YES' %}
+                                        <i class="fas fa-check text-success"></i>
+                                    {% else %}
+                                        <i class="fas fa-times text-danger"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-database"></i> Table Data</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-container">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        {% for column in columns %}
+                        <th style="color: black;">{{ column.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        {% for cell in row %}
+                        <td>
+                            {% if cell is none %}
+                                <span class="text-muted"><em>NULL</em></span>
+                            {% elif cell is string and cell|length > 100 %}
+                                <span title="{{ cell }}">{{ cell[:100] }}...</span>
+                            {% else %}
+                                {{ cell }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if rows|length == 0 %}
+<div class="alert alert-info mt-3" role="alert">
+    <i class="fas fa-info-circle"></i>
+    No data found in this table.
+</div>
+{% endif %}
+
+<script>
+function refreshTable() {
+    location.reload();
+}
+
+function exportTable() {
+    // Simple CSV export functionality
+    const table = document.querySelector('table');
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const csvContent = rows.map(row => 
+        Array.from(row.querySelectorAll('th, td'))
+            .map(cell => `"${cell.textContent.replace(/"/g, '""')}"`)
+            .join(',')
+    ).join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '{{ table_name }}.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+</script>
+{% endblock %}

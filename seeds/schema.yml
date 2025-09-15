@@ -1,0 +1,8 @@
+version: 2
+
+seeds:
+  - name: app_reviews
+    description: "Raw app reviews data from CSV"
+    config:
+      materialized: seed
+      schema: public

@@ -1,0 +1,19 @@
+CREATE TABLE app_reviews (
+    review_id TEXT PRIMARY KEY,
+    user_id TEXT,
+    app_name TEXT,
+    app_category TEXT,
+    review_text TEXT,
+    review_language TEXT,
+    rating DECIMAL(2,1),
+    rating_date DATE,
+    verified_purchase BOOLEAN,
+    device_type TEXT,
+    num_helpful_votes INT,
+    user_age DECIMAL(3,1),
+    user_country TEXT,
+    user_gender TEXT,
+    app_version TEXT
+);
+
+COPY app_reviews FROM '/app_reviews.csv' DELIMITER ',' CSV HEADER NULL '';

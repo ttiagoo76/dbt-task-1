@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Error - DBT Tables Viewer{% endblock %}
+
+{% block content %}
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Error</h4>
+    <p>{{ error }}</p>
+    <hr>
+    <p class="mb-0">
+        <a href="/" class="btn btn-primary">
+            <i class="fas fa-home"></i> Back to Dashboard
+        </a>
+    </p>
+</div>
+{% endblock %}

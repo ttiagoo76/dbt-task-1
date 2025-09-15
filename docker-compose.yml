@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: dbt-postgres
+    environment:
+      POSTGRES_USER: dbt
+      POSTGRES_PASSWORD: dbt
+      POSTGRES_DB: app_reviews
+    ports:
+      - "5432:5432"
+    networks:
+      - dbt-net
+    volumes:
+      - ./init.sql/init.db:/docker-entrypoint-initdb.d/init.sql
+      - ./app_reviews.csv:/app_reviews.csv
+
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.latest
+    container_name: dbt-cli
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app
+    environment:
+      DBT_PROFILES_DIR: /usr/app
+    networks:
+      - dbt-net
+    entrypoint: [ "dbt" ]   # <--- runs dbt directly
+
+  web:
+    build: .
+    container_name: dbt-web
+    depends_on:
+      - postgres
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app
+    environment:
+      FLASK_APP: web_app.py
+      FLASK_ENV: development
+    networks:
+      - dbt-net
+
+networks:
+  dbt-net:
+    driver: bridge

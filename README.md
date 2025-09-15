@@ -1,15 +1,22 @@
-Welcome to your new dbt project!
+## DBT LEARNING
 
-### Using the starter project
+If there is any existing container that you want not to run:
+```
+docker-compose down -v
+```
+The flag -v is for "volume"
 
-Try running the following commands:
-- dbt run
-- dbt test
+Before running:
+```
+docker-compose up -d
+```
+The flag -d is for
 
+Running debug (or any other dbt command):
+```
+docker-compose run --rm dbt debug
+```
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+docker-compose run --rm dbt show --select top_rated_apps
+
+docker-compose exec postgres psql -U dbt -d app_reviews -c "SELECT * FROM analytics.top_rated_apps;"
